@@ -31,6 +31,7 @@ import com.google.inject.Provides;
 import java.awt.Color;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -399,7 +400,9 @@ public class NpcIndicatorsPlugin extends Plugin {
 			}
 
 			// this trips a config change which triggers the overlay rebuild
-			config.setNpcToHighlight(Text.toCSV(highlightedNpcs));
+			var joined = String.join("\n", highlightedNpcs);
+
+			config.setNpcToHighlight(joined);
 		}
 	}
 
@@ -529,7 +532,9 @@ public class NpcIndicatorsPlugin extends Plugin {
 			return Collections.emptyList();
 		}
 
-		return Text.fromCSV(configNpcs);
+		var split = Arrays.asList(configNpcs.split("[,\\n]"));
+
+		return split;
 	}
 
 	void rebuild() {
