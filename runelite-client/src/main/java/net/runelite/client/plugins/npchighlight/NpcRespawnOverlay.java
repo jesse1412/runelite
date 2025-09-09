@@ -48,17 +48,15 @@ import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayUtil;
 
-class NpcRespawnOverlay extends Overlay
-{
+class NpcRespawnOverlay extends Overlay {
 	// Anything but white text is quite hard to see since it is drawn on
 	// a dark background
 	private static final Color TEXT_COLOR = Color.WHITE;
 
 	private static final NumberFormat TIME_LEFT_FORMATTER = DecimalFormat.getInstance(Locale.US);
 
-	static
-	{
-		((DecimalFormat)TIME_LEFT_FORMATTER).applyPattern("#0.0");
+	static {
+		((DecimalFormat) TIME_LEFT_FORMATTER).applyPattern("#0.0");
 	}
 
 	private final Client client;
@@ -66,8 +64,7 @@ class NpcRespawnOverlay extends Overlay
 	private final NpcIndicatorsPlugin plugin;
 
 	@Inject
-	NpcRespawnOverlay(Client client, NpcIndicatorsConfig config, NpcIndicatorsPlugin plugin)
-	{
+	NpcRespawnOverlay(Client client, NpcIndicatorsConfig config, NpcIndicatorsPlugin plugin) {
 		this.client = client;
 		this.config = config;
 		this.plugin = plugin;
@@ -76,11 +73,9 @@ class NpcRespawnOverlay extends Overlay
 	}
 
 	@Override
-	public Dimension render(Graphics2D graphics)
-	{
+	public Dimension render(Graphics2D graphics) {
 		Map<Integer, MemorizedNpc> deadNpcsToDisplay = plugin.getDeadNpcsToDisplay();
-		if (deadNpcsToDisplay.isEmpty() || !config.showRespawnTimer())
-		{
+		if (deadNpcsToDisplay.isEmpty() || !config.showRespawnTimer()) {
 			return null;
 		}
 
@@ -88,30 +83,28 @@ class NpcRespawnOverlay extends Overlay
 		return null;
 	}
 
-	private void renderNpcRespawn(final MemorizedNpc npc, final Graphics2D graphics)
-	{
-		if (npc.getPossibleRespawnLocations().isEmpty())
-		{
+	private void renderNpcRespawn(final MemorizedNpc npc, final Graphics2D graphics) {
+		if (npc.getPossibleRespawnLocations().isEmpty()) {
 			return;
 		}
 
 		final WorldPoint respawnLocation = npc.getPossibleRespawnLocations().get(0);
 		final LocalPoint lp = LocalPoint.fromWorld(client, respawnLocation.getX(), respawnLocation.getY());
 
-		if (lp == null)
-		{
+		if (lp == null) {
 			return;
 		}
 
 		final LocalPoint centerLp = new LocalPoint(
-			lp.getX() + Perspective.LOCAL_TILE_SIZE * (npc.getNpcSize() - 1) / 2,
-			lp.getY() + Perspective.LOCAL_TILE_SIZE * (npc.getNpcSize() - 1) / 2);
+				lp.getX() + Perspective.LOCAL_TILE_SIZE * (npc.getNpcSize() - 1) / 2,
+				lp.getY() + Perspective.LOCAL_TILE_SIZE * (npc.getNpcSize() - 1) / 2);
 
 		final Polygon poly = Perspective.getCanvasTileAreaPoly(client, centerLp, npc.getNpcSize());
 		renderPoly(graphics, config.highlightColor(), config.fillColor(), poly);
 
 		final Instant now = Instant.now();
-		final double baseTick = ((npc.getDiedOnTick() + npc.getRespawnTime()) - client.getTickCount()) * (Constants.GAME_TICK_LENGTH / 1000.0);
+		final double baseTick = ((npc.getDiedOnTick() + npc.getRespawnTime()) - client.getTickCount())
+				* (Constants.GAME_TICK_LENGTH / 1000.0);
 		final double sinceLast = (now.toEpochMilli() - plugin.getLastTickUpdate().toEpochMilli()) / 1000.0;
 		final double timeLeft = Math.max(0.0, baseTick - sinceLast);
 		final String timeLeftStr = TIME_LEFT_FORMATTER.format(timeLeft);
@@ -120,22 +113,19 @@ class NpcRespawnOverlay extends Overlay
 		final int textHeight = graphics.getFontMetrics().getAscent();
 
 		final Point canvasPoint = Perspective
-			.localToCanvas(client, centerLp, respawnLocation.getPlane());
+				.localToCanvas(client, centerLp, respawnLocation.getPlane());
 
-		if (canvasPoint != null)
-		{
+		if (canvasPoint != null) {
 			final Point canvasCenterPoint = new Point(
-				canvasPoint.getX() - textWidth / 2,
-				canvasPoint.getY() + textHeight / 2);
+					canvasPoint.getX() - textWidth / 2,
+					canvasPoint.getY() + textHeight / 2);
 
 			OverlayUtil.renderTextLocation(graphics, canvasCenterPoint, timeLeftStr, TEXT_COLOR);
 		}
 	}
 
-	private void renderPoly(Graphics2D graphics, Color borderColor, Color fillColor, Shape polygon)
-	{
-		if (polygon != null)
-		{
+	private void renderPoly(Graphics2D graphics, Color borderColor, Color fillColor, Shape polygon) {
+		if (polygon != null) {
 			graphics.setColor(borderColor);
 			graphics.setStroke(new BasicStroke((float) config.borderWidth()));
 			graphics.draw(polygon);
