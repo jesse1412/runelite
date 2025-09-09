@@ -99,9 +99,9 @@ public class NpcIndicatorsPlugin extends Plugin {
 
 	private static final String STYLE_HULL = "hull";
 	private static final String STYLE_TILE = "tile";
-	private static final String STYLE_TRUE_TILE = "truetile";
+	private static final String STYLE_TRUE_TILE = "true";
 	private static final String STYLE_SW_TILE = "swtile";
-	private static final String STYLE_SW_TRUE_TILE = "swtruetile";
+	private static final String STYLE_SW_TRUE_TILE = "swtrue";
 	private static final String STYLE_OUTLINE = "outline";
 	private static final String STYLE_NONE = "none";
 

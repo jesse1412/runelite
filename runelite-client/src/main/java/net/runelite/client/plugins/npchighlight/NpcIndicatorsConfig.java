@@ -92,7 +92,7 @@ public interface NpcIndicatorsConfig extends Config {
 		return 0;
 	}
 
-	@ConfigItem(position = 7, keyName = "npcToHighlight", name = "NPCs to highlight", description = "List of NPC names to highlight. Format: npc1, npc2, npc3")
+	@ConfigItem(position = 7, keyName = "npcToHighlight", name = "NPCs to highlight", description = "List of NPC names to highlight. Format: name1,name2:r255:g255:b255:outline,id:npcID,cid:npcCID,etc. Can be new line separated. Supports all highlight types (tile, true, sw, truesw, hull, outline, none)")
 	default String getNpcToHighlight() {
 		return "";
 	}
