@@ -306,12 +306,6 @@ public class NpcIndicatorsPlugin extends Plugin {
 						.setType(MenuAction.RUNELITE)
 						.onClick(this::tag);
 			}
-
-			// Add tag options only if the npc is currently tagged
-			if (idMatch || nameMatch || wildcardMatch) {
-				idx = createTagColorMenu(idx, event.getTarget(), npc);
-				idx = createTagStyleMenu(idx, event.getTarget(), npc);
-			}
 		} else {
 			if (npcUtil.isDying(npc)) {
 				Color color = config.deadNpcMenuColor();
@@ -367,91 +361,6 @@ public class NpcIndicatorsPlugin extends Plugin {
 		} else {
 			throw new IllegalArgumentException();
 		}
-	}
-
-	private int createTagColorMenu(int idx, String target, NPC npc) {
-		List<Color> colors = getUsedColors();
-		// add a few default colors
-		for (Color default_ : new Color[] { Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.MAGENTA }) {
-			if (colors.size() < 5 && !colors.contains(default_)) {
-				colors.add(default_);
-			}
-		}
-
-		MenuEntry parent = client.createMenuEntry(idx--)
-				.setOption("Tag color")
-				.setTarget(target)
-				.setType(MenuAction.RUNELITE);
-		Menu submenu = parent.createSubMenu();
-
-		for (final Color c : colors) {
-			submenu.createMenuEntry(0)
-					.setOption(ColorUtil.prependColorTag("Set color", c))
-					.setType(MenuAction.RUNELITE)
-					.onClick(e -> {
-						setNpcHighlightColor(npc.getId(), c);
-						clientThread.invokeLater(this::rebuild);
-					});
-		}
-
-		submenu.createMenuEntry(0)
-				.setOption("Pick color")
-				.setType(MenuAction.RUNELITE)
-				.onClick(e -> SwingUtilities.invokeLater(() -> {
-					RuneliteColorPicker colorPicker = colorPickerManager.create(client,
-							Color.WHITE, "Tag Color", false);
-					colorPicker.setOnClose(c -> {
-						setNpcHighlightColor(npc.getId(), c);
-						clientThread.invokeLater(this::rebuild);
-					});
-					colorPicker.setVisible(true);
-				}));
-
-		if (getNpcHighlightColor(npc.getId()) != null) {
-			submenu.createMenuEntry(0)
-					.setOption("Reset")
-					.setType(MenuAction.RUNELITE)
-					.onClick(e -> {
-						unsetNpcHighlightColor(npc.getId());
-						clientThread.invokeLater(this::rebuild);
-					});
-		}
-
-		return idx;
-	}
-
-	private int createTagStyleMenu(int idx, String target, NPC npc) {
-		MenuEntry parent = client.createMenuEntry(idx--)
-				.setOption("Tag style")
-				.setTarget(target)
-				.setType(MenuAction.RUNELITE);
-		Menu submenu = parent.createSubMenu();
-
-		String[] names = { "Hull", "Tile", "True tile", "South-west tile", "South-west true tile", "Outline" };
-		String[] styles = { STYLE_HULL, STYLE_TILE, STYLE_TRUE_TILE, STYLE_SW_TILE, STYLE_SW_TRUE_TILE, STYLE_OUTLINE };
-		assert names.length == styles.length;
-		for (int i = 0; i < names.length; ++i) {
-			final String style = styles[i];
-			submenu.createMenuEntry(0)
-					.setOption(names[i])
-					.setType(MenuAction.RUNELITE)
-					.onClick(e -> {
-						setNpcTagStyle(npc.getId(), style);
-						clientThread.invokeLater(this::rebuild);
-					});
-		}
-
-		if (getNpcTagStyle(npc.getId()) != null) {
-			submenu.createMenuEntry(0)
-					.setOption("Reset")
-					.setType(MenuAction.RUNELITE)
-					.onClick(e -> {
-						unsetNpcTagStyle(npc.getId());
-						clientThread.invokeLater(this::rebuild);
-					});
-		}
-
-		return idx;
 	}
 
 	private void tag(MenuEntry entry) {
@@ -762,13 +671,13 @@ public class NpcIndicatorsPlugin extends Plugin {
 
 	private HighlightedNpc highlightedNpc(NPC npc) {
 		HighlightedNpc highlighted_npc = null;
-		if (highlights.isEmpty()) {
+		if (getHighlights().isEmpty()) {
 			highlighted_npc = _highlightedNpc(npc, "");
 			if (highlighted_npc != null) {
 				return highlighted_npc;
 			}
 		} else {
-			for (String highlight : highlights) {
+			for (String highlight : getHighlights()) {
 				highlighted_npc = _highlightedNpc(npc, highlight);
 				if (highlighted_npc != null) {
 					return highlighted_npc;
