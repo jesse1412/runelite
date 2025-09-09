@@ -32,8 +32,7 @@ import net.runelite.api.NPC;
 import net.runelite.api.NPCComposition;
 import net.runelite.api.coords.WorldPoint;
 
-class MemorizedNpc
-{
+class MemorizedNpc {
 	@Getter
 	private final int npcIndex;
 
@@ -61,8 +60,7 @@ class MemorizedNpc
 	@Setter
 	private List<WorldPoint> possibleRespawnLocations;
 
-	MemorizedNpc(NPC npc)
-	{
+	MemorizedNpc(NPC npc) {
 		this.npcName = npc.getName();
 		this.npcIndex = npc.getIndex();
 		this.possibleRespawnLocations = new ArrayList<>(2);
@@ -71,8 +69,7 @@ class MemorizedNpc
 
 		final NPCComposition composition = npc.getTransformedComposition();
 
-		if (composition != null)
-		{
+		if (composition != null) {
 			this.npcSize = composition.getSize();
 		}
 	}
